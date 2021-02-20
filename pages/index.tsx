@@ -1,5 +1,6 @@
 import { GetStaticProps } from 'next'
 import { useState, useEffect, ComponentType } from 'react'
+import useCustomComponents from '../lib/useCustomComponents'
 
 
 export const getStaticProps: GetStaticProps = async function() {
@@ -10,33 +11,17 @@ export const getStaticProps: GetStaticProps = async function() {
     }
 }
 
-const Home = ({ components }) => {
-    const [customComponents, setCustomComponents] = useState<Object>(null)
-
-    useEffect(() => {
-        async function importCustomComponents() {
-
-            let newCustomComponents = {}
-            for (let name of components) {
-                newCustomComponents[name] = (await import(`../components/${name}`))[name]
-            }
-
-            setCustomComponents(newCustomComponents)
-        }
-
-        importCustomComponents()
-    }, [])
+export default function Home({ components }) {
+    const customComponents = useCustomComponents(components)
 
     return (
         <main>
             <h1>Hello</h1>
             {customComponents
-                ? Object.values(customComponents).map((Component: ComponentType) => {
+                ? Object.values(customComponents).map((Component) => {
                       return <Component></Component>
                   })
                 : null}
         </main>
     )
 }
-
-export default Home
